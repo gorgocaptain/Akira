@@ -95,6 +95,7 @@ export default function App() {
       name: json.product.product_name || 'Unnamed',
       brands: json.product.brands || '',
       ingredients: json.product.ingredients_text || '',
+      quantity: json.product.quantity || '',
       image: json.product.image_url || '',
     };
 

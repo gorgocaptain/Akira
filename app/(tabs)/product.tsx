@@ -17,21 +17,38 @@ interface Product {
   brands: string;
   ingredients: string;
   image: string;
+  quantity: number;
+  maxQuantity: number;
 }
 
 export default function ProductList() {
   const router = useRouter();
   const [savedProducts, setSavedProducts] = useState<Product[] | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Reload on focus
+  const fetchMaxQuantities = async (products: Product[]) => {
+    return products.map((product) => ({
+      ...product,
+      maxQuantity: product.quantity,
+    }));
+  };
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
       (async () => {
         const raw = await AsyncStorage.getItem('savedProducts');
         if (!isActive) return;
-        setSavedProducts(raw ? JSON.parse(raw) : []);
+
+        const parsed = raw ? JSON.parse(raw) : [];
+        const withQuantities = parsed.map((p: Product) => ({
+          ...p,
+          quantity: p.quantity || 1,
+          maxQuantity: p.maxQuantity || 5,
+        }));
+        const updated = await fetchMaxQuantities(withQuantities);
+        setSavedProducts(updated);
       })();
       return () => {
         isActive = false;
@@ -39,7 +56,6 @@ export default function ProductList() {
     }, [])
   );
 
-  // Confirm deletion
   const confirmDelete = async () => {
     if (!deletingProduct || !savedProducts) return;
     const newList = savedProducts.filter(
@@ -67,51 +83,43 @@ export default function ProductList() {
           <Text style={styles.emptyText}>No products added yet.</Text>
         ) : (
           savedProducts.map((prod, idx) => (
-            <View key={idx} style={styles.card}>
-              {prod.image ? (
-                <Image source={{ uri: prod.image }} style={styles.cardImage} />
-              ) : (
-                <View style={[styles.cardImage, styles.imagePlaceholder]}>
-                  <Text style={styles.placeholderText}>No Image</Text>
+            <TouchableOpacity
+              key={idx}
+              onPress={() => setSelectedProduct(prod)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.card}>
+                {prod.image ? (
+                  <Image source={{ uri: prod.image }} style={styles.cardImage} />
+                ) : (
+                  <View style={[styles.cardImage, styles.imagePlaceholder]}>
+                    <Text style={styles.placeholderText}>No Image</Text>
+                  </View>
+                )}
+
+                <View style={styles.cardRight}>
+                  <Text style={styles.cardTitle} numberOfLines={2}>
+                    {prod.name}
+                  </Text>
+
+                  <View style={styles.cardFooter}>
+                    <Text style={styles.qtyDisplay}>Quantity: {prod.quantity}</Text>
+
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => setDeletingProduct(prod)}
+                    >
+                      <Text style={styles.deleteText}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              )}
-
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>
-                  {prod.brands.split(',')[0] || 'Unknown'}
-                </Text>
               </View>
-
-              <Text style={styles.cardTitle} numberOfLines={2}>
-                {prod.name}
-              </Text>
-
-              <View style={styles.cardFooter}>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => setDeletingProduct(prod)}
-                >
-                  <Text style={styles.deleteText}>✕</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.viewButton}
-                  onPress={() =>
-                    router.push({
-                      pathname: '/product',
-                      params: prod as unknown as Record<string, string>,
-                    })
-                  }
-                >
-                  <Text style={styles.viewIcon}>{'>'}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            </TouchableOpacity>
           ))
         )}
       </ScrollView>
 
-      {/* Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
       {deletingProduct && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -133,6 +141,43 @@ export default function ProductList() {
                 <Text style={styles.confirmText}>Delete</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      )}
+
+      {/* Product Details Modal */}
+      {selectedProduct && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{selectedProduct.name}</Text>
+            {selectedProduct.image ? (
+              <Image source={{ uri: selectedProduct.image }} style={styles.detailImage} />
+            ) : (
+              <View style={[styles.cardImage, styles.imagePlaceholder]}>
+                <Text style={styles.placeholderText}>No Image</Text>
+              </View>
+            )}
+            <ScrollView style={{ maxHeight: 250, marginVertical: 10 }}>
+              <Text style={styles.detailText}>
+                <Text style={styles.detailLabel}>Brands: </Text>{selectedProduct.brands}
+              </Text>
+              <Text style={styles.detailText}>
+                <Text style={styles.detailLabel}>Ingredients: </Text>{selectedProduct.ingredients}
+              </Text>
+              <Text style={styles.detailText}>
+                <Text style={styles.detailLabel}>Quantity: </Text>{selectedProduct.quantity}
+              </Text>
+              <Text style={styles.detailText}>
+                <Text style={styles.detailLabel}>Max Quantity: </Text>{selectedProduct.maxQuantity}
+              </Text>
+            </ScrollView>
+
+            <TouchableOpacity
+              style={[styles.modalButton, styles.confirmButton]}
+              onPress={() => setSelectedProduct(null)}
+            >
+              <Text style={styles.confirmText}>Close</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -174,10 +219,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 3,
+    flexDirection: 'row',
+    height: 100,
   },
   cardImage: {
-    width: '100%',
-    height: 140,
+    width: 100,
+    height: 100,
     resizeMode: 'cover',
   },
   imagePlaceholder: {
@@ -189,26 +236,17 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  badge: {
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    backgroundColor: '#00C853',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badgeText: {
-    color: '#000',
-    fontSize: 12,
-    fontWeight: '600',
+  cardRight: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingRight: 12,
   },
   cardTitle: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingTop: 10,
     lineHeight: 22,
   },
   cardFooter: {
@@ -216,24 +254,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingBottom: 8,
+  },
+  qtyDisplay: {
+    color: '#ccc',
+    fontSize: 16,
   },
   deleteButton: {
-    padding: 4,
+    paddingLeft: 16,
   },
   deleteText: {
     fontSize: 18,
     color: 'rgba(255,255,255,0.6)',
-  },
-  viewButton: {
-    backgroundColor: 'rgba(0,200,83,0.15)',
-    borderRadius: 12,
-    padding: 6,
-  },
-  viewIcon: {
-    fontSize: 16,
-    color: '#00C853',
-    fontWeight: '700',
   },
   modalOverlay: {
     position: 'absolute',
@@ -285,5 +317,21 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 14,
     fontWeight: '700',
+  },
+  detailImage: {
+    width: '100%',
+    height: 150,
+    resizeMode: 'contain',
+    borderRadius: 10,
+    backgroundColor: '#222',
+  },
+  detailText: {
+    color: '#ddd',
+    marginBottom: 8,
+    fontSize: 14,
+  },
+  detailLabel: {
+    fontWeight: '700',
+    color: '#00C853',
   },
 });
