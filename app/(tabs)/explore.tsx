@@ -13,7 +13,11 @@ import {
   View,
 } from 'react-native';
 
+<<<<<<< HEAD
 
+=======
+// Reusable modal for choices
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
 function ChoiceModal({
   visible,
   title,
@@ -135,11 +139,20 @@ export default function App() {
           barcodeScannerSettings={{ barcodeTypes: ['upc_a'] }}
         >
           <TouchableOpacity style={styles.flipBtn} onPress={toggleFacing}>
+<<<<<<< HEAD
             <Text style={styles.flipText}>↺</Text>
           </TouchableOpacity>
         </CameraView>
       )} 
 
+=======
+            <Text style={styles.flipText}>↺ Flip</Text>
+          </TouchableOpacity>
+        </CameraView>
+      )}
+
+      {/* Product choice modal */}
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
       {productChoices && (
         <ChoiceModal
           visible={true}
@@ -163,6 +176,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   message: { color: '#ccc', textAlign: 'center', marginBottom: 12 },
   camera: { flex: 1 },
+<<<<<<< HEAD
 flipBtn: {
   position: 'absolute',
   bottom: 50,
@@ -186,6 +200,17 @@ flipBtn: {
   elevation: 5,
 },
   flipText: { color: '#eee', fontSize: 45, marginBottom: 15 },
+=======
+  flipBtn: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+    backgroundColor: '#222',
+    padding: 12,
+    borderRadius: 24,
+  },
+  flipText: { color: '#eee', fontSize: 16 },
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
 
   modalOverlay: {
     flex: 1,

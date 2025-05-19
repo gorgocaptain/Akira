@@ -8,7 +8,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+<<<<<<< HEAD
   TextInput,
+=======
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   TouchableOpacity,
   View
 } from 'react-native';
@@ -104,6 +107,7 @@ export default function ProductList() {
                   </Text>
 
                   <View style={styles.cardFooter}>
+<<<<<<< HEAD
                     <Text style={styles.qtyLabel}>Quantity:</Text>
                     <TextInput
                       style={styles.qtyInput}
@@ -121,6 +125,14 @@ export default function ProductList() {
                     <TouchableOpacity
                       style={styles.deleteButton}
                       onPress={() => setDeletingProduct(prod)}>
+=======
+                    <Text style={styles.qtyDisplay}>Quantity: {prod.quantity}</Text>
+
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => setDeletingProduct(prod)}
+                    >
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
                       <Text style={styles.deleteText}>✕</Text>
                     </TouchableOpacity>
                   </View>
@@ -131,6 +143,10 @@ export default function ProductList() {
         )}
       </ScrollView>
 
+<<<<<<< HEAD
+=======
+      {/* Delete Confirmation Modal */}
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
       {deletingProduct && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -196,6 +212,7 @@ export default function ProductList() {
   );
 }
 
+<<<<<<< HEAD
 const ACCENT = '#FFF';
 const BG = '#000';
 const CARD_BG = '#2C2D2D';
@@ -217,10 +234,23 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 40
+=======
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: '#000' },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+  },
+  container: {
+    padding: 16,
+    paddingBottom: 40,
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
+<<<<<<< HEAD
     color: ACCENT,
     marginBottom: 16,
     textAlign: 'left'
@@ -263,10 +293,49 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: TEXT_SECONDARY,
     fontSize: 14
+=======
+    color: '#00C853',
+    marginBottom: 16,
+    textAlign: 'left',
+  },
+  emptyText: {
+    color: '#555',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 40,
+  },
+  card: {
+    backgroundColor: '#111',
+    borderRadius: 10,
+    marginBottom: 16,
+    overflow: 'hidden',
+    shadowColor: '#00C853',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+    flexDirection: 'row',
+    height: 100,
+  },
+  cardImage: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+  },
+  imagePlaceholder: {
+    backgroundColor: '#222',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: '#666',
+    fontSize: 14,
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   cardRight: {
     flex: 1,
     justifyContent: 'space-between',
+<<<<<<< HEAD
     padding: 12
   },
   cardTitle: {
@@ -319,10 +388,55 @@ const styles = StyleSheet.create({
     backgroundColor: CARD_BG,
     borderRadius: 12,
     padding: 20
+=======
+    paddingRight: 12,
+  },
+  cardTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    lineHeight: 22,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingBottom: 8,
+  },
+  qtyDisplay: {
+    color: '#ccc',
+    fontSize: 16,
+  },
+  deleteButton: {
+    paddingLeft: 16,
+  },
+  deleteText: {
+    fontSize: 18,
+    color: 'rgba(255,255,255,0.6)',
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: '#111',
+    borderRadius: 12,
+    padding: 20,
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
+<<<<<<< HEAD
     color: ACCENT,
     marginBottom: 8
   },
@@ -334,11 +448,25 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-end'
+=======
+    color: '#00C853',
+    marginBottom: 8,
+  },
+  modalBody: {
+    fontSize: 16,
+    color: '#ddd',
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   modalButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 6,
+<<<<<<< HEAD
     marginLeft: 10
   },
   cancelButton: {
@@ -356,12 +484,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     marginLeft: 105,
+=======
+    marginLeft: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#333',
+  },
+  confirmButton: {
+    backgroundColor: '#00C853',
+  },
+  cancelText: {
+    color: '#aaa',
+    fontSize: 14,
+  },
+  confirmText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '700',
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   detailImage: {
     width: '100%',
     height: 150,
     resizeMode: 'contain',
     borderRadius: 10,
+<<<<<<< HEAD
     backgroundColor: PLACEHOLDER_BG,
     marginBottom: 12
   },
@@ -376,3 +523,17 @@ const styles = StyleSheet.create({
     color: TEXT_PRIMARY
   }
 });
+=======
+    backgroundColor: '#222',
+  },
+  detailText: {
+    color: '#ddd',
+    marginBottom: 8,
+    fontSize: 14,
+  },
+  detailLabel: {
+    fontWeight: '700',
+    color: '#00C853',
+  },
+});
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38

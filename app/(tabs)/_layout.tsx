@@ -10,7 +10,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+<<<<<<< HEAD
   return ( 
+=======
+  return (
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
