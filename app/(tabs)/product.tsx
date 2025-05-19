@@ -8,6 +8,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+<<<<<<< HEAD
+  TextInput,
+=======
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   TouchableOpacity,
   View
 } from 'react-native';
@@ -103,12 +107,32 @@ export default function ProductList() {
                   </Text>
 
                   <View style={styles.cardFooter}>
+<<<<<<< HEAD
+                    <Text style={styles.qtyLabel}>Quantity:</Text>
+                    <TextInput
+                      style={styles.qtyInput}
+                      keyboardType="number-pad"
+                      value={String(prod.quantity)}
+                      onChangeText={(txt: string) => {
+                        const num = parseInt(txt, 10) || 1;
+                        const updated = savedProducts.map((p, i) =>
+                          i === idx ? { ...p, quantity: num } : p
+                        );
+                        setSavedProducts(updated);
+                        AsyncStorage.setItem('savedProducts', JSON.stringify(updated));
+                      }}
+                    />
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => setDeletingProduct(prod)}>
+=======
                     <Text style={styles.qtyDisplay}>Quantity: {prod.quantity}</Text>
 
                     <TouchableOpacity
                       style={styles.deleteButton}
                       onPress={() => setDeletingProduct(prod)}
                     >
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
                       <Text style={styles.deleteText}>✕</Text>
                     </TouchableOpacity>
                   </View>
@@ -119,7 +143,10 @@ export default function ProductList() {
         )}
       </ScrollView>
 
+<<<<<<< HEAD
+=======
       {/* Delete Confirmation Modal */}
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
       {deletingProduct && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -185,6 +212,29 @@ export default function ProductList() {
   );
 }
 
+<<<<<<< HEAD
+const ACCENT = '#FFF';
+const BG = '#000';
+const CARD_BG = '#2C2D2D';
+const TEXT_PRIMARY = '#FFF';
+const TEXT_SECONDARY = '#555';
+const PLACEHOLDER_BG = '#222';
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: BG
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: BG,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  container: {
+    padding: 16,
+    paddingBottom: 40
+=======
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#000' },
   loadingContainer: {
@@ -195,10 +245,55 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 40,
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
+<<<<<<< HEAD
+    color: ACCENT,
+    marginBottom: 16,
+    textAlign: 'left'
+  },
+  emptyText: {
+    color: TEXT_SECONDARY,
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 40
+  },
+  card: {
+    backgroundColor: CARD_BG,
+    borderRadius: 10,
+    marginBottom: 16,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    height: 100,
+    shadowColor: ACCENT,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3
+  },
+  cardImage: {
+    width: 100,
+    height: '100%',
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10
+  },
+  imagePlaceholder: {
+    width: 100,
+    height: '100%',
+    backgroundColor: PLACEHOLDER_BG,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10
+  },
+  placeholderText: {
+    color: TEXT_SECONDARY,
+    fontSize: 14
+=======
     color: '#00C853',
     marginBottom: 16,
     textAlign: 'left',
@@ -235,10 +330,65 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: '#666',
     fontSize: 14,
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   cardRight: {
     flex: 1,
     justifyContent: 'space-between',
+<<<<<<< HEAD
+    padding: 12
+  },
+  cardTitle: {
+    color: TEXT_PRIMARY,
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',       
+    paddingHorizontal: 12,
+    paddingBottom: 8,
+  },
+  qtyLabel: {
+    color: TEXT_PRIMARY,
+    fontSize: 16,
+    marginRight: 8,
+    marginLeft: -10,
+  },
+  qtyInput: {
+    width: 60,
+    height: 36,                  
+    borderWidth: 1,
+    borderColor: TEXT_SECONDARY,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 0,          
+    textAlignVertical: 'center', 
+    color: TEXT_PRIMARY,
+    fontSize: 14,
+
+    marginRight: 70,
+  },
+  deleteButton: {
+    padding: 8,
+    borderRadius: 6
+  },
+  deleteText: {
+    fontSize: 18,
+    color: TEXT_SECONDARY
+  },
+  modalOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    padding: 24
+  },
+  modalContent: {
+    backgroundColor: CARD_BG,
+    borderRadius: 12,
+    padding: 20
+=======
     paddingRight: 12,
   },
   cardTitle: {
@@ -281,10 +431,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
     borderRadius: 12,
     padding: 20,
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
+<<<<<<< HEAD
+    color: ACCENT,
+    marginBottom: 8
+  },
+  modalBody: {
+    fontSize: 16,
+    color: TEXT_PRIMARY,
+    marginBottom: 20
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
+=======
     color: '#00C853',
     marginBottom: 8,
   },
@@ -296,11 +460,31 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   modalButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 6,
+<<<<<<< HEAD
+    marginLeft: 10
+  },
+  cancelButton: {
+    backgroundColor: '#333'
+  },
+  cancelText: {
+    color: TEXT_SECONDARY,
+    fontSize: 14
+  },
+  confirmButton: {
+    backgroundColor: ACCENT
+  },
+  confirmText: {
+    color: BG,
+    fontSize: 14,
+    fontWeight: '700',
+    marginLeft: 105,
+=======
     marginLeft: 10,
   },
   cancelButton: {
@@ -317,12 +501,29 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 14,
     fontWeight: '700',
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   detailImage: {
     width: '100%',
     height: 150,
     resizeMode: 'contain',
     borderRadius: 10,
+<<<<<<< HEAD
+    backgroundColor: PLACEHOLDER_BG,
+    marginBottom: 12
+  },
+  detailText: {
+    color: TEXT_PRIMARY,
+    marginBottom: 8,
+    fontSize: 14,
+    lineHeight: 20
+  },
+  detailLabel: {
+    fontWeight: '700',
+    color: TEXT_PRIMARY
+  }
+});
+=======
     backgroundColor: '#222',
   },
   detailText: {
@@ -335,3 +536,4 @@ const styles = StyleSheet.create({
     color: '#00C853',
   },
 });
+>>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
