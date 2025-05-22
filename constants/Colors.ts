@@ -23,7 +23,6 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
-<<<<<<< HEAD
     primary: {
     100: { light: '#E8F0E6', dark: '#233A1D' },
     200: { light: '#C6DAC1', dark: '#2E4A26' },
@@ -94,6 +93,4 @@ export const Colors = {
     secondary: { light: '#F5F5F5', dark: '#1E1E1E' },
     tertiary: { light: '#EEEEEE', dark: '#2D2D2D' },
   },
-=======
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
 };

@@ -1,20 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
-  Image,
+  ActivityIndicator, Alert, Image,
   ScrollView,
   StyleSheet,
   Text,
-<<<<<<< HEAD
   TextInput,
-=======
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   TouchableOpacity,
   View
 } from 'react-native';
+
+const OPENAI_API_KEY = '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';
 
 interface Product {
   name: string;
@@ -38,6 +37,62 @@ export default function ProductList() {
     }));
   };
 
+  const generateRecipes = async () => {
+  if (!savedProducts || savedProducts.length === 0) {
+    Alert.alert("No Products available to generate recipe!");
+    return;
+  }
+
+  const formattedIngredients = savedProducts.map(p => `${p.name} (${p.quantity})`).join(', ');
+
+  const prompt = `I have the following ingredients: ${formattedIngredients}.
+Generate one simple recipe I can cook using these items.
+Each recipe should include:
+- A name
+- A short description
+- The ingredients used from the list
+- Simple steps to make it`;
+
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 700,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const recipeText = response.data.choices[0].message.content;
+
+    // Save to AsyncStorage
+    const existing = await AsyncStorage.getItem('savedRecipes');
+    const existingRecipes = existing ? JSON.parse(existing) : [];
+
+    const newRecipe = {
+      id: Date.now(),
+      text: recipeText,
+      usedProducts: savedProducts,
+    };
+
+    const updatedRecipes = [...existingRecipes, newRecipe];
+    await AsyncStorage.setItem('savedRecipes', JSON.stringify(updatedRecipes));
+
+    Alert.alert('Recipe Generated', recipeText);
+  } catch (error) {
+    console.error(error);
+    Alert.alert('Error', 'Failed to generate recipes.');
+  }
+};
+
+  
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -80,9 +135,22 @@ export default function ProductList() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.header}>My Saved Products</Text>
+   
 
+      <ScrollView contentContainerStyle={styles.container}>
+   <View style={{ position: 'relative', marginBottom: 20 }}>
+  <Text style={styles.header}>My Saved Products</Text>
+  <TouchableOpacity 
+    style={styles.recipeBtn}
+    onPress={() => router.push('/recipes')}
+  >
+    <Text style={styles.recipeBtnText}>🍴</Text>
+  </TouchableOpacity>
+</View>
+
+        <TouchableOpacity style={styles.genBtn} onPress={generateRecipes}>
+          <Text style={styles.genBtnText}>Generate Recipes</Text>
+        </TouchableOpacity>
         {savedProducts.length === 0 ? (
           <Text style={styles.emptyText}>No products added yet.</Text>
         ) : (
@@ -107,32 +175,37 @@ export default function ProductList() {
                   </Text>
 
                   <View style={styles.cardFooter}>
-<<<<<<< HEAD
                     <Text style={styles.qtyLabel}>Quantity:</Text>
+
                     <TextInput
                       style={styles.qtyInput}
-                      keyboardType="number-pad"
-                      value={String(prod.quantity)}
-                      onChangeText={(txt: string) => {
-                        const num = parseInt(txt, 10) || 1;
-                        const updated = savedProducts.map((p, i) =>
-                          i === idx ? { ...p, quantity: num } : p
-                        );
-                        setSavedProducts(updated);
-                        AsyncStorage.setItem('savedProducts', JSON.stringify(updated));
+                      keyboardType="numeric"
+                      value={prod.quantity === 0 ? '' : prod.quantity.toString()}
+                      onChangeText={(txt) => {
+                        const updatedProducts = savedProducts.map((p, i) => {
+                          if (i === idx) {
+                            return {
+                              ...p,
+                              quantity: txt === '' ? 0 : parseInt(txt, 10) || 0,
+                            };
+                          }
+                          return p;
+                        });
+                        setSavedProducts(updatedProducts);
+                      }}
+                      onEndEditing={async () => {
+                        const cleaned = savedProducts.map((p) => ({
+                          ...p,
+                          quantity: Math.max(1, p.quantity || 1),
+                        }));
+                        setSavedProducts(cleaned);
+                        await AsyncStorage.setItem('savedProducts', JSON.stringify(cleaned));
                       }}
                     />
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => setDeletingProduct(prod)}>
-=======
-                    <Text style={styles.qtyDisplay}>Quantity: {prod.quantity}</Text>
 
                     <TouchableOpacity
                       style={styles.deleteButton}
-                      onPress={() => setDeletingProduct(prod)}
-                    >
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
+                      onPress={() => setDeletingProduct(prod)}>
                       <Text style={styles.deleteText}>✕</Text>
                     </TouchableOpacity>
                   </View>
@@ -143,10 +216,6 @@ export default function ProductList() {
         )}
       </ScrollView>
 
-<<<<<<< HEAD
-=======
-      {/* Delete Confirmation Modal */}
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
       {deletingProduct && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -172,7 +241,6 @@ export default function ProductList() {
         </View>
       )}
 
-      {/* Product Details Modal */}
       {selectedProduct && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -212,7 +280,6 @@ export default function ProductList() {
   );
 }
 
-<<<<<<< HEAD
 const ACCENT = '#FFF';
 const BG = '#000';
 const CARD_BG = '#2C2D2D';
@@ -221,39 +288,20 @@ const TEXT_SECONDARY = '#555';
 const PLACEHOLDER_BG = '#222';
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: BG
-  },
+  screen: { flex: 1, backgroundColor: BG },
   loadingContainer: {
     flex: 1,
     backgroundColor: BG,
     justifyContent: 'center',
     alignItems: 'center'
   },
-  container: {
-    padding: 16,
-    paddingBottom: 40
-=======
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#000' },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-  },
-  container: {
-    padding: 16,
-    paddingBottom: 40,
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
-  },
+  container: { padding: 16, paddingBottom: 40 },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-<<<<<<< HEAD
     color: ACCENT,
-    marginBottom: 16,
-    textAlign: 'left'
+    marginTop: 20,
+    textAlign: 'center'
   },
   emptyText: {
     color: TEXT_SECONDARY,
@@ -290,54 +338,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10
   },
-  placeholderText: {
-    color: TEXT_SECONDARY,
-    fontSize: 14
-=======
-    color: '#00C853',
-    marginBottom: 16,
-    textAlign: 'left',
-  },
-  emptyText: {
-    color: '#555',
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 40,
-  },
-  card: {
-    backgroundColor: '#111',
-    borderRadius: 10,
-    marginBottom: 16,
-    overflow: 'hidden',
-    shadowColor: '#00C853',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
-    flexDirection: 'row',
-    height: 100,
-  },
-  cardImage: {
-    width: 100,
-    height: 100,
-    resizeMode: 'cover',
-  },
-  imagePlaceholder: {
-    backgroundColor: '#222',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    color: '#666',
-    fontSize: 14,
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
-  },
-  cardRight: {
-    flex: 1,
-    justifyContent: 'space-between',
-<<<<<<< HEAD
-    padding: 12
-  },
+  placeholderText: { color: TEXT_SECONDARY, fontSize: 14 },
+  cardRight: { flex: 1, justifyContent: 'space-between', padding: 12 },
   cardTitle: {
     color: TEXT_PRIMARY,
     fontSize: 16,
@@ -346,38 +348,26 @@ const styles = StyleSheet.create({
   },
   cardFooter: {
     flexDirection: 'row',
-    alignItems: 'center',       
+    alignItems: 'center',
     paddingHorizontal: 12,
-    paddingBottom: 8,
+    paddingBottom: 8
   },
-  qtyLabel: {
-    color: TEXT_PRIMARY,
-    fontSize: 16,
-    marginRight: 8,
-    marginLeft: -10,
-  },
+  qtyLabel: { color: TEXT_PRIMARY, fontSize: 16, marginRight: 8, marginLeft: -10 },
   qtyInput: {
     width: 60,
-    height: 36,                  
+    height: 36,
     borderWidth: 1,
     borderColor: TEXT_SECONDARY,
     borderRadius: 6,
     paddingHorizontal: 8,
-    paddingVertical: 0,          
-    textAlignVertical: 'center', 
+    paddingVertical: 0,
+    textAlignVertical: 'center',
     color: TEXT_PRIMARY,
     fontSize: 14,
-
-    marginRight: 70,
+    marginRight: 70
   },
-  deleteButton: {
-    padding: 8,
-    borderRadius: 6
-  },
-  deleteText: {
-    fontSize: 18,
-    color: TEXT_SECONDARY
-  },
+  deleteButton: { padding: 8, borderRadius: 6 },
+  deleteText: { fontSize: 18, color: TEXT_SECONDARY },
   modalOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.7)',
@@ -388,127 +378,30 @@ const styles = StyleSheet.create({
     backgroundColor: CARD_BG,
     borderRadius: 12,
     padding: 20
-=======
-    paddingRight: 12,
-  },
-  cardTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    lineHeight: 22,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingBottom: 8,
-  },
-  qtyDisplay: {
-    color: '#ccc',
-    fontSize: 16,
-  },
-  deleteButton: {
-    paddingLeft: 16,
-  },
-  deleteText: {
-    fontSize: 18,
-    color: 'rgba(255,255,255,0.6)',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  modalContent: {
-    backgroundColor: '#111',
-    borderRadius: 12,
-    padding: 20,
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
-<<<<<<< HEAD
     color: ACCENT,
     marginBottom: 8
   },
-  modalBody: {
-    fontSize: 16,
-    color: TEXT_PRIMARY,
-    marginBottom: 20
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end'
-=======
-    color: '#00C853',
-    marginBottom: 8,
-  },
-  modalBody: {
-    fontSize: 16,
-    color: '#ddd',
-    marginBottom: 20,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
-  },
+  modalBody: { fontSize: 16, color: TEXT_PRIMARY, marginBottom: 20 },
+  modalButtons: { flexDirection: 'row', justifyContent: 'flex-end' },
   modalButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 6,
-<<<<<<< HEAD
     marginLeft: 10
   },
-  cancelButton: {
-    backgroundColor: '#333'
-  },
-  cancelText: {
-    color: TEXT_SECONDARY,
-    fontSize: 14
-  },
-  confirmButton: {
-    backgroundColor: ACCENT
-  },
-  confirmText: {
-    color: BG,
-    fontSize: 14,
-    fontWeight: '700',
-    marginLeft: 105,
-=======
-    marginLeft: 10,
-  },
-  cancelButton: {
-    backgroundColor: '#333',
-  },
-  confirmButton: {
-    backgroundColor: '#00C853',
-  },
-  cancelText: {
-    color: '#aaa',
-    fontSize: 14,
-  },
-  confirmText: {
-    color: '#000',
-    fontSize: 14,
-    fontWeight: '700',
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
-  },
+  cancelButton: { backgroundColor: '#333' },
+  cancelText: { color: TEXT_SECONDARY, fontSize: 14 },
+  confirmButton: { backgroundColor: ACCENT },
+  confirmText: { color: BG, fontSize: 14, fontWeight: '700', marginLeft: 105 },
   detailImage: {
     width: '100%',
     height: 150,
     resizeMode: 'contain',
     borderRadius: 10,
-<<<<<<< HEAD
     backgroundColor: PLACEHOLDER_BG,
     marginBottom: 12
   },
@@ -518,22 +411,44 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20
   },
-  detailLabel: {
-    fontWeight: '700',
-    color: TEXT_PRIMARY
-  }
+  detailLabel: { fontWeight: '700', color: TEXT_PRIMARY },
+  genBtn: {
+    backgroundColor: ACCENT,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignSelf: 'center',
+    marginVertical: 16,
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 4
+  },
+  genBtnText: {
+    color: BG,
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center'
+  },
+recipeBtn: {
+  position: 'absolute',
+  top: 16,
+  right: 16,
+  backgroundColor: BG,
+  padding: 10,
+  borderRadius: 25,
+  shadowColor: '#FFF',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+  zIndex: 999,
+},
+recipeBtnText: {
+  fontSize: 20,
+  color: '#000',
+  fontWeight: 'bold',
+},
+
 });
-=======
-    backgroundColor: '#222',
-  },
-  detailText: {
-    color: '#ddd',
-    marginBottom: 8,
-    fontSize: 14,
-  },
-  detailLabel: {
-    fontWeight: '700',
-    color: '#00C853',
-  },
-});
->>>>>>> 9b2d3d58177d52e803556721a305223eb2370c38
