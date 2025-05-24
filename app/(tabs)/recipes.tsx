@@ -36,7 +36,7 @@ export default function SavedRecipesScreen() {
             key={r.id || index}
             onPress={() => toggleExpand(index)}
             style={styles.recipeBox}
-          >
+          > 
             <Text style={styles.recipeTitle}>Recipe #{index + 1}</Text>
             {expandedIndex === index && (
               <Text style={styles.recipeText}>{r.text}</Text>

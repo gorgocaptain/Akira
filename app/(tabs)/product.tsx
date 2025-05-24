@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
@@ -12,6 +13,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+
 
 const OPENAI_API_KEY = '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';
 
@@ -43,15 +45,9 @@ export default function ProductList() {
     return;
   }
 
-  const formattedIngredients = savedProducts.map(p => `${p.name} (${p.quantity})`).join(', ');
+const formattedIngredients = savedProducts.map(p => `${p.name} (${p.quantity})`).join(', ');
 
-  const prompt = `I have the following ingredients: ${formattedIngredients}.
-Generate one simple recipe I can cook using these items.
-Each recipe should include:
-- A name
-- A short description
-- The ingredients used from the list
-- Simple steps to make it`;
+  const prompt = 'I have the following ingredients: ${formattedIngredients}. Generate one simple recipe I can cook using these items. Each recipe should include: - A name - A short description - The ingredients used from the list - Simple steps to make it';
 
   try {
     const response = await axios.post(
@@ -138,19 +134,30 @@ Each recipe should include:
    
 
       <ScrollView contentContainerStyle={styles.container}>
-   <View style={{ position: 'relative', marginBottom: 20 }}>
+   <View style={styles.cool}>
   <Text style={styles.header}>My Saved Products</Text>
   <TouchableOpacity 
     style={styles.recipeBtn}
     onPress={() => router.push('/recipes')}
   >
-    <Text style={styles.recipeBtnText}>🍴</Text>
+    <Text style={styles.recipeBtnText}>.</Text>
   </TouchableOpacity>
 </View>
 
         <TouchableOpacity style={styles.genBtn} onPress={generateRecipes}>
           <Text style={styles.genBtnText}>Generate Recipes</Text>
+         
         </TouchableOpacity>
+        <LinearGradient
+          colors={['#000', '#fff']}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={{
+            width: '100%',
+            height: 4,
+            marginBottom: 15,
+          }}
+        />
         {savedProducts.length === 0 ? (
           <Text style={styles.emptyText}>No products added yet.</Text>
         ) : (
@@ -280,15 +287,17 @@ Each recipe should include:
   );
 }
 
-const ACCENT = '#FFF';
-const BG = '#000';
-const CARD_BG = '#2C2D2D';
-const TEXT_PRIMARY = '#FFF';
+const ACCENT = '#000';
+const BG = '#FFF';
+const CARD_BG = '#fefefe';
+const TEXT_PRIMARY = '#000';
 const TEXT_SECONDARY = '#555';
 const PLACEHOLDER_BG = '#222';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: BG },
+  cool: {position: 'relative', marginBottom: 20},   
+  
   loadingContainer: {
     flex: 1,
     backgroundColor: BG,
@@ -300,8 +309,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: ACCENT,
-    marginTop: 20,
-    textAlign: 'center'
+    marginTop: 80,
+    textAlign: 'left'
   },
   emptyText: {
     color: TEXT_SECONDARY,
@@ -327,7 +336,8 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
     borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10
+    borderBottomLeftRadius: 10,
+    backgroundColor: BG
   },
   imagePlaceholder: {
     width: 100,
@@ -399,10 +409,10 @@ const styles = StyleSheet.create({
   confirmText: { color: BG, fontSize: 14, fontWeight: '700', marginLeft: 105 },
   detailImage: {
     width: '100%',
-    height: 150,
+    height: 350,
     resizeMode: 'contain',
     borderRadius: 10,
-    backgroundColor: PLACEHOLDER_BG,
+    backgroundColor: BG,
     marginBottom: 12
   },
   detailText: {
@@ -417,7 +427,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
-    alignSelf: 'center',
+    
     marginVertical: 16,
     shadowColor: '#fff',
     shadowOffset: { width: 0, height: 2 },
@@ -446,7 +456,7 @@ recipeBtn: {
   zIndex: 999,
 },
 recipeBtnText: {
-  fontSize: 20,
+  fontSize: 40,
   color: '#000',
   fontWeight: 'bold',
 },
