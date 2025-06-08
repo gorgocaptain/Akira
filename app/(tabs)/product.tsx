@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = '';
 
 interface Product {
   name: string;
