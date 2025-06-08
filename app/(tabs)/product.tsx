@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 
-const OPENAI_API_KEY = '';
+const OPENAI_API_KEY = 'hi';
 
 interface Product {
   name: string;
