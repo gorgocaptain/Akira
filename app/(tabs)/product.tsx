@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = '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';
 
 interface Product {
   name: string;
@@ -47,7 +47,7 @@ export default function ProductList() {
 
 const formattedIngredients = savedProducts.map(p => `${p.name} (${p.quantity})`).join(', ');
 
-  const prompt = 'I have the following ingredients: ${formattedIngredients}. Generate one simple recipe I can cook using these items. Each recipe should include: - A name - A short description - The ingredients used from the list - Simple steps to make it';
+  const prompt = `I have the following ingredients: ${formattedIngredients}. Generate one simple recipe I can cook using these items. Each recipe should include: - A name - A short description - The ingredients used from the list - Simple steps to make it, return this as a json file, it should have name, description, steps, and macro nutrients (calories, carbs, protein, and fats all of which should be a quantity in grams except for calories)`;
 
   try {
     const response = await axios.post(
